@@ -1,0 +1,61 @@
+\documentclass[]{article}
+
+\usepackage{amsthm, amsmath, amssymb}
+\usepackage{bbm}
+\usepackage{physics}
+
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\V}{\mathbb{V}}
+\newcommand{\Pb}{\mathbb{P}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\one}{\mathbbm{1}}
+
+\setcounter{secnumdepth}{0}
+
+% Title Page
+\title{Bayesian statistics}
+
+\begin{document}
+\maketitle
+\section{Derivatives computation}
+In this section, we consider a Gaussian mixture model.
+
+\begin{align*}
+X &\sim \sum_{k=1}^{K} \omega_k \N(\mu_k, \sigma_k) \\
+f_X(x) &= \sum_{k=1}^K \omega_k f_k(x)
+\end{align*}
+
+
+\paragraph{The derivatives with respect to $\omega$}
+\begin{align*}
+\pdv{\log f}{\omega_k} (x) &= \frac{f_k(x)}{f(x)} \\	
+\pdv{\log f}{\omega_k}{\omega_j} (x) &= - \frac{f_k(x) f_j(x)}{f^2(x)}
+\end{align*}
+
+\paragraph{The derivatives with respect to $\mu$}
+\begin{align*}
+	\pdv{\log f}{\mu_k} (x) &= \omega_k \frac{x - \mu_k}{\sigma_k^2} \frac{f_k(x)}{f(x)} \\
+	\pdv{\log f}{\mu_k}{\mu_j} (x) &= - w_k. w_j (\frac{x - \mu_k}{\sigma_k^2}) (\frac{x - \mu_j}{\sigma_j^2}) \frac{f_k(x) f_j(x)}{f^2(x)} \\
+	\pdv[2]{\log f}{\mu_k} (x) &= \frac{\omega_k}{\sigma_k^2}\frac{f_k(x)}{f(x)} (1 - \frac{(x - \mu_k)^2}{\sigma_k^2}(1 - \omega_k \frac{f_k(x)}{f(x)})
+\end{align*}
+
+\paragraph{The derivatives with respect to $\sigma$}
+
+\begin{align*}
+	\pdv{\log f}{\sigma_k} (x) &= \frac{\omega_k}{\sigma_k} ( \frac{(\mu_k -x)^2}{\sigma_k^2} - 1) \frac{f_k(x)}{f(x)} \\	
+	\pdv{\log f}{\sigma_k}{\sigma_j} (x) &= - \frac{\omega_k\omega_j}{\sigma_k\sigma_j} ( \frac{(\mu_k -x)^2}{\sigma_k^2} - 1) ( \frac{(\mu_j -x)^2}{\sigma_j^2} - 1) \frac{f_k(x) f_j(x)}{f^2(x)} \\
+	\pdv[2]{\log f}{\sigma_k} (x) &= 
+\end{align*}
+
+\paragraph{The cross-derivatives}
+
+\begin{align*}
+	\pdv{\log f}{\omega_k}{\mu_j} (x) &= \omega_j \frac{\mu_j - x}{\sigma_j^2}\frac{f_k.f_j(x)}{f^2(x)} \\	
+	\pdv{\log f}{\omega_k}{\sigma_j} (x) &= \frac{\omega_j}{\sigma_j} ( \frac{(\mu_j -x)^2}{\sigma_j^2} - 1)  \frac{f_k.f_j(x)}{f^2(x)} \\	
+	\pdv{\log f}{\omega_k}{\mu_k} (x) &= f_k(x) (\frac{x - \omega_k}{\sigma_k^2}) \frac{w_k f_k(x) - f(x)}{f^2(x)}\\
+	\pdv{\log f}{\omega_k}{\sigma_k} (x) &= \frac{1}{\sigma_k} ( \frac{(\mu_k -x)^2}{\sigma_k^2} - 1) \frac{f(x) f_k(x) - w_k f_k^2(x)}{f^2(x)}  \\
+	\pdv{\log f}{\mu_k}{\sigma_j} (x) &= \\
+	\pdv{\log f}{\mu_k}{\sigma_k} (x) &=
+\end{align*}
+
+\end{document}
