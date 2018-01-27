@@ -55,7 +55,7 @@ class Mixture():
         self.x = x
 
     def likelihood(self, w, mu, sigma, type=None):
-        likelihoods = [sum([w[i] * product(norm.pdf(xj, loc=mu, scale=sigma)) for i in range(len(w))]) for xj in self.x]
+        likelihoods = [sum([w[i] * norm.pdf(xj, loc=mu[i], scale=sigma[i]) for i in range(len(w))]) for xj in self.x]
         if type is None :
             return product(likelihoods)
         if type == "log" :
