@@ -332,3 +332,6 @@ TSWLatexianTemp*
 # standalone packages
 *.sta
 
+*.iml
+*.xml
+*.json
