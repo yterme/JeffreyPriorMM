@@ -48,7 +48,7 @@ class Mixture():
         w_all=w+[1-sum(w)]
         sigma2=[s**2 for s in sigma ]
         #assumption gaussian mixture
-        return(sum([w_all[i]*(-0.5*np.log(2*np.pi*sigma2[i])- abs((xj-mu[i])**2/sigma2[i])) \
+        return(sum([w_all[i]*(-0.5)*(np.log(2*np.pi*sigma2[i])- (xj-mu[i])**2/sigma2[i]) \
                     for i in range(len(mu)) for xj in self.x]))
         
 class JeffreyPrior():
