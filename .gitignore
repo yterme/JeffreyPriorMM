@@ -332,3 +332,4 @@ TSWLatexianTemp*
 # standalone packages
 *.sta
 
+test.py
