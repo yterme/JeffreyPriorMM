@@ -11,9 +11,6 @@ from scipy.stats import lognorm
 from scipy.stats import truncnorm
 import numpy as np
 
-# class Kernel:
-#    def __init__(self, which="gaussian"):
-
 
 class GaussianKernel():
     def __init__(self, std_w, std_mu, std_sigma, sigma_kernel="TruncNorm"):
@@ -24,13 +21,13 @@ class GaussianKernel():
         self.sigma_kernel = sigma_kernel
 
     def simulate(self, w, mu, sigma):
-        return (self.simulate_w(w), self.simulate_mu(mu), self.simulate_sigma(sigma))
+        return self.simulate_w(w), self.simulate_mu(mu), self.simulate_sigma(sigma)
 
     def simulate_w(self, w):
-        return (list([truncnorm.rvs(a=-w[0] / self.std_w, b=(1 - w[0]) / self.std_w, loc=w[0], scale=self.std_w)]))
+        return list([truncnorm.rvs(a=-w[0] / self.std_w, b=(1 - w[0]) / self.std_w, loc=w[0], scale=self.std_w)])
 
     def simulate_mu(self, mu):
-        return (list(np.random.normal(mu, [self.std_mu, self.std_mu])))
+        return list(np.random.normal(mu, [self.std_mu, self.std_mu]))
 
     def simulate_sigma(self, sigma):
         if self.sigma_kernel == "TruncNorm":
@@ -95,11 +92,14 @@ class Mixture():
         self.x = x
 
     def likelihood(self, w, mu, sigma):
-        w_all = w + [1 - sum(w)]
         # sigma2=[s**2 for s in sigma ]
         # assumption gaussian mixture
-        ls = [sum([w_all[i] * norm.pdf(xj, loc=mu[i], scale=sigma[i]) \
-                   for i in range(len(w_all))]) for xj in self.x]
+        ls = [sum([w[i] * norm.pdf(xj, loc=mu[i], scale=sigma[i]) \
+                   for i in range(len(w))]) for xj in self.x]
         return np.sum([np.log(l) for l in ls])
 
-
+    @staticmethod
+    def density(w_all, mu, sigma):
+        def density_fun(x):
+            return sum([w_all[i] * norm.pdf(x, loc=mu[i], scale=sigma[i]) for i in range(len(w_all))])
+        return density_fun
