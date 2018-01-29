@@ -56,8 +56,8 @@ for i in range(N):
         # Here we need the full omegas
         w_full = w + [1 - sum(w)]
         w_prop_full = w_prop + [1 - sum(w_prop)]
-        if (np.log(u2) < p.evaluate(w_prop_full, mu_prop, sigma_prop, proportional=False, density=m.density(w_full, mu, sigma), log=True) -
-                p.evaluate(w_full, mu, sigma, proportional=False, density=m.density(w_full, mu, sigma), log=True)):
+        if (np.log(u2) < p.evaluate(w_prop, mu_prop, sigma_prop, proportional=False, density=m.density(w_prop, mu_prop, sigma_prop), log=True) -
+                p.evaluate(w, mu, sigma, proportional=False, density=m.density(w, mu, sigma), log=True)):
             w = w_prop
             mu = mu_prop
             sigma = sigma_prop

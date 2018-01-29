@@ -14,6 +14,7 @@ class Integral():
 
     def integrate(self, function, density):
         evaluation_points = [self.low_bound + i * self.riemann_interval for i in range(self.splits)]
+        #import pdb; pdb.set_trace()
         values = [function(evaluation_points[i]) * density(evaluation_points[i]) for i in range(self.splits)]
         return sum(values) * self.riemann_interval
 
