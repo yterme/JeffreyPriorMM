@@ -1,7 +1,7 @@
 from scipy.stats import norm
 import numpy as np
 
-from double_derivatives import *
+from second_derivatives import *
 from Integral import Integral
 
 # Test the simple integral

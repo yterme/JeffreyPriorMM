@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.stats
+from tools import ratio
 
 dnorm = scipy.stats.norm.pdf
 
@@ -19,64 +20,71 @@ class SecondDerivatives():
     def functions_mappings(self, couple, w, mu, sigma, i, j, proportional):
         def fun(x):
             return self.functions_dict[tuple(couple)](i=i, j=j, p=w, mu=mu, sigma=sigma, x=x, proportional=proportional)
+
         return fun
+
+    def mixture_density(self, p, mu, sigma):
+        return
 
     @staticmethod
     def d2_pi_pj(i, j, p, mu, sigma, x, proportional=None):
-        if i == j:
-            return -dnorm(x, mu[i], sigma[i]) ** 2 / (np.dot(p, dnorm(x, mu, sigma)) ** 2)
-        return -dnorm(x, mu[i], sigma[i]) * dnorm(x, mu[j], sigma[j]) / (np.dot(p, dnorm(x, mu, sigma)) ** 2)
+        num = [- dnorm(x, mu[i], sigma[i]), dnorm(x, mu[j], sigma[j])]
+        den = [np.dot(p, dnorm(x, mu, sigma)) ** 2]
+        return ratio(num=num, den=den)
 
     @staticmethod
     def d2_pi_muj(i, j, p, mu, sigma, x, proportional=None):
         if i == j:
-            return ((mu[i] - x) / sigma[i] ** 2) * (dnorm(x, mu[i], sigma[i]) / (np.dot(p, dnorm(x, mu, sigma))) - p[i] * (
-                    dnorm(x, mu[i], sigma[i]) / (np.dot(p, dnorm(x, mu, sigma)))) ** 2)
-        return (p[j] * ((mu[j] - x) / sigma[j] ** 2) * dnorm(x, mu[j], sigma[j]) * dnorm(x, mu[i], sigma[i]) / (
-                np.dot(p, dnorm(x, mu, sigma)) ** 2))
+            num = [(x - mu[i]), dnorm(x, mu[i], sigma[i]),
+                   (p[i] * dnorm(x, mu[i], sigma[i]) - np.dot(p, dnorm(x, mu, sigma)))]
+            den = [sigma[i] ** 2, np.dot(p, dnorm(x, mu, sigma)) ** 2]
+        else:
+            num = [p[j], (mu[j] - x), dnorm(x, mu[j], sigma[j]), dnorm(x, mu[i], sigma[i])]
+            den = [sigma[j] ** 2, np.dot(p, dnorm(x, mu, sigma)) ** 2]
+        return ratio(num=num, den=den)
 
     @staticmethod
     def d2_pi_sigmaj(i, j, p, mu, sigma, x, proportional=None):
         if i == j:
-            return 1 / sigma[i] * ((mu[i] - x) ** 2 / sigma[i] ** 2 - 1) * (
-                    p[i] * dnorm(x, mu[i], sigma[i]) / np.dot(p, dnorm(x, mu, sigma)) - dnorm(x, mu[i], sigma[i]) ** 2 /
-                    np.dot(p, dnorm(x, mu, sigma)) ** 2)
-        return (p[j] / sigma[j] * ((x - mu[j]) ** 2 / sigma[j] ** 2 - 1) * dnorm(x, mu[i], sigma[i]) *
-                dnorm(x, mu[j], sigma[j]) / (np.dot(p, dnorm(x, mu, sigma)) ** 2))
+            diff = ratio(num=[np.dot(p, dnorm(x, mu, sigma)) * dnorm(x, mu[i], sigma[i]) -
+                              p[i] * dnorm(x, mu[i], sigma[i] ** 2)],
+                         den=[np.dot(p, dnorm(x, mu, sigma)) ** 2])
+            num = [(mu[i] - x) ** 2 / (sigma[i] ** 2) - 1, diff]
+            den = [sigma[i]]
+        else:
+            num = [- p[j], (x - mu[j]) ** 2 / sigma[j] ** 2 - 1, dnorm(x, mu[i], sigma[i]), dnorm(x, mu[j], sigma[j])]
+            den = [sigma[j], (np.dot(p, dnorm(x, mu, sigma)) ** 2)]
+        return ratio(num, den)
 
     @staticmethod
     def d2_mui_muj(i, j, p, mu, sigma, x, proportional=None):
         if i == j:
-            return (p[i] / sigma[i] ** 2 * dnorm(x, mu[i], sigma[i]) / np.dot(p, dnorm(x, mu, sigma)) *
-                    (1 - (x - mu[i]) ** 2 / sigma[i] ** 2) * (1 - p[i] * dnorm(x, mu[i], sigma[i]) /
-                                                              np.dot(p, dnorm(x, mu, sigma))))
+            diff = 1 - ratio([p[i] * dnorm(x, mu[i], sigma[i])], [np.dot(p, dnorm(x, mu, sigma))])
+            num = [p[i], dnorm(x, mu[i], sigma[i]), (1 - (x - mu[i]) ** 2 / sigma[i] ** 2), diff]
+            den = [sigma[i] ** 2, np.dot(p, dnorm(x, mu, sigma))]
         else:
             # TODO : Check this derivative
-            return - p[i] * p[j] * ((x - mu[i]) / sigma[i] ** 2) * ((x - mu[j]) / sigma[j] ** 2) * \
-                   (dnorm(x, mu[i], sigma[i]) * dnorm(x, mu[j], sigma[j])) / np.dot(p, dnorm(x, mu, sigma))
+            num = [- p[i], p[j], x - mu[i], x - mu[j], dnorm(x, mu[i], sigma[i]), dnorm(x, mu[j], sigma[j])]
+            den = [sigma[i] ** 2, sigma[j] ** 2, np.dot(p, dnorm(x, mu, sigma)) ** 2]
+        return ratio(num, den)
 
     @staticmethod
     def d2_mui_sigmaj(i, j, p, mu, sigma, x, proportional=None):
         if i == j:
-            return ((p[i] ** 2 / sigma[i] ** 3) *
-                    (x - mu[i]) * ((x - mu[i]) ** 2 / sigma[i] ** 2 - 1) * dnorm(x, mu[i], sigma[i]) ** 2
-                    / np.dot(p, dnorm(x, mu, sigma)))
-        return (((p[i] * p[j]) / (sigma[i] * sigma[j])) * ((x - mu[i]) / (sigma[i] ** 2 * sigma[j])) *
-                (((x - mu[j]) ** 2 / sigma[j] ** 2 - 1) * dnorm(x, mu[j], sigma[j]) * dnorm(x, mu[i], sigma[i]))
-                / np.dot(p, dnorm(x, mu, sigma)))
+            num = [p[i] ** 2, (x - mu[i]), ((x - mu[i]) ** 2 / sigma[i] ** 2 - 1), dnorm(x, mu[i], sigma[i]) ** 2]
+            den = [sigma[i] ** 3, np.dot(p, dnorm(x, mu, sigma))]
+        else:
+            num = [(p[i] * p[j]), (x - mu[i]), ((x - mu[j]) ** 2 / sigma[j] ** 2 - 1), dnorm(x, mu[j], sigma[j]),
+                   dnorm(x, mu[i], sigma[i])]
+            den = [(sigma[i] * sigma[j]), (sigma[i] ** 2 * sigma[j]), np.dot(p, dnorm(x, mu, sigma))]
+        return ratio(num, den)
 
     @staticmethod
     def d2_sigmai_sigmaj(i, j, p, mu, sigma, x, proportional=None):
-        if i == j:
-            if proportional:
-                return ((p[i] ** 2 / sigma[i] ** 2) *
-                        (((x - mu[i]) ** 2 / sigma[i] ** 2 - 1) * dnorm(x, mu[i], sigma[i])) ** 2
-                        / np.dot(p, dnorm(x, mu, sigma)))
-
-            return ((p[i] ** 2 / sigma[i] ** 2) *
-                    (((x - mu[i]) ** 2 / sigma[i] ** 2 - 1) * dnorm(x, mu[i], sigma[i])) ** 2
-                    / np.dot(p, dnorm(x, mu, sigma)))
-        return (((p[i] * p[j]) / (sigma[i] * sigma[j])) *
-                (((x - mu[i]) ** 2 / sigma[i] ** 2 - 1) * dnorm(x, mu[i], sigma[i])) *
-                (((x - mu[j]) ** 2 / sigma[j] ** 2 - 1) * dnorm(x, mu[j], sigma[j]))
-                / np.dot(p, dnorm(x, mu, sigma)))
+        # if proportional:
+        #     num = [(p[i] ** 2 / sigma[i] ** 2), (((x - mu[i]) ** 2 / sigma[i] ** 2 - 1) * dnorm(x, mu[i], sigma[i])) ** 2]
+        #     den = [np.dot(p, dnorm(x, mu, sigma))]
+        num = [(p[i] * p[j]), ((x - mu[i]) ** 2 / sigma[i] ** 2 - 1), dnorm(x, mu[i], sigma[i]),
+               ((x - mu[j]) ** 2 / sigma[j] ** 2 - 1), dnorm(x, mu[j], sigma[j])]
+        den = [(sigma[i] * sigma[j]), np.dot(p, dnorm(x, mu, sigma))]
+        return ratio(num, den)
