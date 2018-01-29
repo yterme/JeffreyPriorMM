@@ -11,10 +11,6 @@ from scipy.stats import lognorm
 from scipy.stats import truncnorm
 import numpy as np
 
-# class Kernel:
-#    def __init__(self, which="gaussian"):
-
-
 class GaussianKernel():
     def __init__(self, std_w, std_mu, std_sigma, sigma_kernel="TruncNorm"):
         # self.size_w=size_w`
@@ -31,6 +27,7 @@ class GaussianKernel():
 
     def simulate_mu(self, mu):
         return (list(np.random.normal(mu, [self.std_mu, self.std_mu])))
+
 
     def simulate_sigma(self, sigma):
         if self.sigma_kernel == "TruncNorm":
@@ -95,11 +92,15 @@ class Mixture():
         self.x = x
 
     def likelihood(self, w, mu, sigma):
-        w_all = w + [1 - sum(w)]
+
         # sigma2=[s**2 for s in sigma ]
         # assumption gaussian mixture
-        ls = [sum([w_all[i] * norm.pdf(xj, loc=mu[i], scale=sigma[i]) \
-                   for i in range(len(w_all))]) for xj in self.x]
+        ls = [sum([w[i] * norm.pdf(xj, loc=mu[i], scale=sigma[i]) \
+                   for i in range(len(w))]) for xj in self.x]
         return np.sum([np.log(l) for l in ls])
 
-
+    @staticmethod
+    def density(w_all, mu, sigma):
+        def density_fun(x):
+            return sum([w_all[i] * norm.pdf(x, loc=mu[i], scale=sigma[i]) for i in range(len(w_all))])
+        return density_fun

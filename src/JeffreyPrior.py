@@ -1,38 +1,46 @@
 from Integral import Integral
-from numpy.linalg import det
 
-from double_derivatives import *
+from second_derivatives import SecondDerivatives
+
+from numpy.linalg import det
+import numpy as np
 
 
 class JeffreyPrior():
-    def __init__(self, mcmc_parameters=None, riemann_parameters=None):
-        self.functions_dict = {(0,0) : d2_w2,
-                               (0,1) : d2_wi_muj,
-                               (0,2) : d2_wi_sigmaj,
-                               (1,0) : d2_wi_muj,
-                               (1,1) : d2_mui_muj,
-                               (1,2) : d2_mui_sigmaj,
-                               (2,0) : d2_wi_sigmaj,
-                               (2,1) : d2_mu_i_muj,
-                               (2,2) : d2_sigmai_sigmaj}
-
+    def __init__(self, mcmc_parameters=None, riemann_parameters=None, debug_mode=False):
         self.integral = Integral(riemann_parameters=riemann_parameters, mcmc_parameters=mcmc_parameters)
+        self.second_derivatives = SecondDerivatives()
 
-    def functions_matrix(self, w, mu, sigma):
+        self.debug_mode = debug_mode
+
+    def functions_matrix(self, w, mu, sigma, proportional):
+        """ Returns the matrix of second derivatives functions for computing the information matrix"""
+
         matrix_size = len(w) + len(mu) + len(sigma)
-        belongings_row = [0 for i in range(len(w))] + [1 for i in range(len(mu))] + [2 for i in range(len(sigma))]
-        belongings_matrix = [[(belongings_row[i], belongings_row[j]) for i in range(matrix_size)]
-                            for j in range(matrix_size)]
-        return [[self.functions_dict[belongings_matrix[i, j]] for i in range(matrix_size)]
-                            for j in range(matrix_size)]
+        vars_idx = [i for i in range(len(w))] + [i for i in range(len(mu))] + [i for i in range(len(sigma))]
 
-    def information_matrix(self, w, mu, sigma, density):
-        """ Information matrix with Rieman integral"""
-        functions_matrix = self.functions_matrix(w, mu, sigma)
+        belongings_row = [0 for _ in range(len(w))] + [1 for _ in range(len(mu))] + [2 for _ in range(len(sigma))]
+        belongings_matrix = np.array([[(belongings_row[i], belongings_row[j])
+                                       for i in range(matrix_size)]
+                                      for j in range(matrix_size)])
+
+        return [[self.second_derivatives.functions_mappings(couple=belongings_matrix[i, j],
+                                         w=w, mu=mu, sigma=sigma, i=vars_idx[i], j=vars_idx[j],
+                                                            proportional=proportional)
+                 for i in range(matrix_size)] for j in range(matrix_size)]
+
+    def information_matrix(self, w, mu, sigma, proportional, density):
+        """ Information matrix with Riemann integral"""
+        functions_matrix = self.functions_matrix(w, mu, sigma, proportional)
         return self.integral.integrate_matrix(functions_matrix, density=density)
 
-    def evaluate(self, w, mu, sigma, density, log):
-        if log :
-            return np.log(det(self.information_matrix(w, mu, sigma, density)))
-        else :
-            return det(self.information_matrix(w, mu, sigma, density))
+    def evaluate(self, w, mu, sigma, proportional, density, log):
+        if self.debug_mode :
+            return 0
+
+        # TODO : Check the consistency of the dimension of w throughout the code, in this class w is the full w
+        assert .99 < sum(w) < 1.01
+        if log:
+            return np.log(det(self.information_matrix(w, mu, sigma, proportional, density)))
+        else:
+            return det(self.information_matrix(w, mu, sigma, proportional, density))
