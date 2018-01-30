@@ -35,9 +35,9 @@ class JeffreyPrior():
                                                             proportional=proportional)
                  for i in range(matrix_size)] for j in range(matrix_size)]
 
-    def information_matrix(self, w, mu, sigma, proportional, density, is_omega):
+    def information_matrix(self, w, mu, sigma, proportional, density, known):
         """ Information matrix with Riemann integral"""
-        functions_matrix = self.functions_matrix(w, mu, sigma, proportional, is_omega)
+        functions_matrix = self.functions_matrix(w, mu, sigma, proportional, known)
         mat = - self.integral.integrate_matrix(functions_matrix, density=density)
         print(mat)
         return(mat)
