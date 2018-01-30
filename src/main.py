@@ -26,7 +26,7 @@ x = np.concatenate([x1, x2])
 # Delayed Acceptance Algo
 
 # Initialization
-w = [0.3]
+w = [0.5]
 mu = [0, 0]
 sigma = [1, 1]
 N = 1000
@@ -60,8 +60,8 @@ for i in range(N):
         # Here we need the full omegas
         #w_full = w + [1 - sum(w)]
         #w_prop_full = w_prop + [1 - sum(w_prop)]
-        p_prop=p.evaluate(w_prop, mu_prop, sigma_prop, proportional=False, density=m.density(w_prop, mu_prop, sigma_prop), log=True, known=[0]) 
-        p0=p.evaluate(w, mu, sigma, proportional=False, density=m.density(w, mu, sigma), log=True, known=[0])
+        p_prop=p.evaluate(w_prop, mu_prop, sigma_prop, proportional=False, density=m.density(w_prop, mu_prop, sigma_prop), log=True, unknown=[1,2]) 
+        p0=p.evaluate(w, mu, sigma, proportional=False, density=m.density(w, mu, sigma), log=True, unknown=[1,2])
         print(p_prop-p0)
         if np.log(u2) < p_prop-p0:
             w = w_prop

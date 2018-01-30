@@ -20,6 +20,8 @@ class SecondDerivatives():
     def functions_mappings(self, couple, w, mu, sigma, i, j, proportional):
         p=w+[1-sum(w)]
         def fun(x):
+            #print(self.functions_dict[tuple(couple)])
+            #print(couple)
             return self.functions_dict[tuple(couple)](i=i, j=j, p=p, mu=mu, sigma=sigma, x=x, proportional=proportional)
 
         return fun

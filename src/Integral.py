@@ -20,12 +20,12 @@ class Integral():
         #values = [function(evaluation_points[i]) * density(evaluation_points[i]) for i in range(self.splits)]
         def fun_to_int(x):
             return(function(x)*density(x))
-        return(integrate.quad(fun_to_int, self.low_bound, self.up_bound))
+        return(integrate.quad(fun_to_int, self.low_bound, self.up_bound)[0])
         
         #return sum(values) * self.riemann_interval
 
     def integrate_matrix(self, functions_matrix, density):
-        matrix_size = len(functions_matrix)
+        #matrix_size = len(functions_matrix)
         return [[self.integrate(function= function, density=density)
                  for function in function_list]
                 for function_list in functions_matrix]
