@@ -8,4 +8,6 @@ def ratio(num, den, log=False) :
 
     #if not log :
     #    return np.exp(log_ratio)
+    #print(num)
+    #print(den)
     return np.prod(num)/np.prod(den)
