@@ -101,7 +101,8 @@ class Mixture():
         return np.sum([np.log(l) for l in ls])
 
     @staticmethod
-    def density(w_all, mu, sigma):
+    def density(w, mu, sigma):
+        w_all=w+[1-sum(w)]
         def density_fun(x):
             return sum([w_all[i] * norm.pdf(x, loc=mu[i], scale=sigma[i]) for i in range(len(w_all))])
         return density_fun
