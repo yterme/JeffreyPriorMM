@@ -42,11 +42,11 @@ class JeffreyPrior():
         print(mat)
         return(mat)
 
-    def evaluate(self, w, mu, sigma, proportional, density, log):
+    def evaluate(self, w, mu, sigma, proportional, density, log, known):
         if self.debug_mode :
             return 0
 
         if log:
-            return 0.5 * np.log(det(self.information_matrix(w, mu, sigma, proportional, density)))
+            return 0.5 * np.log(det(self.information_matrix(w, mu, sigma, proportional, density, known)))
         else:
-            return np.sqrt(det(self.information_matrix(w, mu, sigma, proportional, density)))
+            return np.sqrt(det(self.information_matrix(w, mu, sigma, proportional, density, known)))
