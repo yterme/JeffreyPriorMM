@@ -26,13 +26,13 @@ x = np.concatenate([x1, x2])
 # Delayed Acceptance Algo
 
 # Initialization
-w = [0.5]
+w = [0.3]
 mu = [0, 0]
 sigma = [1, 1]
 N = 1000
 
 k = GaussianKernel(std_w=0.1, std_mu=0.1, std_sigma=0.1)
-p = JeffreyPrior(riemann_parameters={"splits": 1000, "bounds": [-30, 30]}, debug_mode=False)
+p = JeffreyPrior(riemann_parameters={"splits": 1000, "bounds": [-10, 10]}, debug_mode=False)
 # If debug mode is True, Jeffrey returns always 0
 m = Mixture(x)
 trace_w = []
@@ -40,6 +40,10 @@ trace_mu = []
 trace_sigma = []
 # Acceptance rate
 acc_list = []
+
+trace_w=list(trace_w)
+trace_mu=list(trace_mu)
+trace_sigma=list(trace_sigma)
 
 for i in range(N):
     u1 = np.random.uniform()
@@ -54,10 +58,12 @@ for i in range(N):
         # TODO : Generalize full w throughout the code
         # !! : Risky code chirurgy
         # Here we need the full omegas
-        w_full = w + [1 - sum(w)]
-        w_prop_full = w_prop + [1 - sum(w_prop)]
-        if (np.log(u2) < p.evaluate(w_prop, mu_prop, sigma_prop, proportional=False, density=m.density(w_prop, mu_prop, sigma_prop), log=True) -
-                p.evaluate(w, mu, sigma, proportional=False, density=m.density(w, mu, sigma), log=True)):
+        #w_full = w + [1 - sum(w)]
+        #w_prop_full = w_prop + [1 - sum(w_prop)]
+        p_prop=p.evaluate(w_prop, mu_prop, sigma_prop, proportional=False, density=m.density(w_prop, mu_prop, sigma_prop), log=True, known=[0]) 
+        p0=p.evaluate(w, mu, sigma, proportional=False, density=m.density(w, mu, sigma), log=True, known=[0])
+        print(p_prop-p0)
+        if np.log(u2) < p_prop-p0:
             w = w_prop
             mu = mu_prop
             sigma = sigma_prop

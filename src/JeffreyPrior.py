@@ -22,9 +22,9 @@ class JeffreyPrior():
         parameters = [w, mu, sigma]
 
         for par_idx in known :
-            matrix_size += len(parameters[par_idx])
-            vars_idx += [i for i in range(len(parameters[par_idx]))]
-            belongings_row += [0 for _ in range(len(parameters[par_idx]))]
+            matrix_size.append(len(parameters[par_idx]))
+            vars_idx.append([i for i in range(len(parameters[par_idx]))])
+            belongings_row.append([0 for _ in range(len(parameters[par_idx]))])
 
         belongings_matrix = np.array([[(belongings_row[i], belongings_row[j])
                                        for i in range(matrix_size)]
