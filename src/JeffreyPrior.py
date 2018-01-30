@@ -12,18 +12,19 @@ class JeffreyPrior():
         self.second_derivatives = SecondDerivatives()
         self.debug_mode = debug_mode
 
-    def functions_matrix(self, w, mu, sigma, proportional, is_omega):
+    def functions_matrix(self, w, mu, sigma, proportional, known):
         """ Returns the matrix of second derivatives functions for computing the information matrix"""
 
-        if is_omega :
-            matrix_size = len(w)
-            vars_idx = [i for i in range(len(w))]
-            belongings_row = [0 for _ in range(len(w))]
+        matrix_size = []
+        vars_idx = []
+        belongings_row = []
 
-        else :
-            matrix_size = len(mu) + len(sigma)
-            vars_idx = [i for i in range(len(mu))] + [i for i in range(len(sigma))]
-            belongings_row = [1 for _ in range(len(mu))] + [2 for _ in range(len(sigma))]
+        parameters = [w, mu, sigma]
+
+        for par_idx in known :
+            matrix_size += len(parameters[par_idx])
+            vars_idx += [i for i in range(len(parameters[par_idx]))]
+            belongings_row += [0 for _ in range(len(parameters[par_idx]))]
 
         belongings_matrix = np.array([[(belongings_row[i], belongings_row[j])
                                        for i in range(matrix_size)]
