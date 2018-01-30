@@ -12,13 +12,19 @@ class JeffreyPrior():
         self.second_derivatives = SecondDerivatives()
         self.debug_mode = debug_mode
 
-    def functions_matrix(self, w, mu, sigma, proportional):
+    def functions_matrix(self, w, mu, sigma, proportional, is_omega):
         """ Returns the matrix of second derivatives functions for computing the information matrix"""
 
-        matrix_size = len(w) + len(mu) + len(sigma)
-        vars_idx = [i for i in range(len(w))] + [i for i in range(len(mu))] + [i for i in range(len(sigma))]
+        if is_omega :
+            matrix_size = len(w)
+            vars_idx = [i for i in range(len(w))]
+            belongings_row = [0 for _ in range(len(w))]
 
-        belongings_row = [0 for _ in range(len(w))] + [1 for _ in range(len(mu))] + [2 for _ in range(len(sigma))]
+        else :
+            matrix_size = len(mu) + len(sigma)
+            vars_idx = [i for i in range(len(mu))] + [i for i in range(len(sigma))]
+            belongings_row = [1 for _ in range(len(mu))] + [2 for _ in range(len(sigma))]
+
         belongings_matrix = np.array([[(belongings_row[i], belongings_row[j])
                                        for i in range(matrix_size)]
                                       for j in range(matrix_size)])
@@ -28,10 +34,10 @@ class JeffreyPrior():
                                                             proportional=proportional)
                  for i in range(matrix_size)] for j in range(matrix_size)]
 
-    def information_matrix(self, w, mu, sigma, proportional, density):
+    def information_matrix(self, w, mu, sigma, proportional, density, is_omega):
         """ Information matrix with Riemann integral"""
-        functions_matrix = self.functions_matrix(w, mu, sigma, proportional)
-        mat= -self.integral.integrate_matrix(functions_matrix, density=density)
+        functions_matrix = self.functions_matrix(w, mu, sigma, proportional, is_omega)
+        mat = - self.integral.integrate_matrix(functions_matrix, density=density)
         print(mat)
         return(mat)
 
@@ -39,9 +45,7 @@ class JeffreyPrior():
         if self.debug_mode :
             return 0
 
-        # TODO : Check the consistency of the dimension of w throughout the code, in this class w is the full w
-        #assert .99 < sum(w) < 1.01
         if log:
-            return 0.5*np.log(det(self.information_matrix(w, mu, sigma, proportional, density)))
+            return 0.5 * np.log(det(self.information_matrix(w, mu, sigma, proportional, density)))
         else:
             return np.sqrt(det(self.information_matrix(w, mu, sigma, proportional, density)))
