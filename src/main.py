@@ -27,8 +27,8 @@ x = np.concatenate([x1, x2])
 
 # Initialization
 w = [0.5]
-mu = [0, 0]
-sigma = [1, 1]
+mu = [0.1, -0.1]
+sigma = [1.1, 0.9]
 N = 1000
 
 k = GaussianKernel(std_w=0.1, std_mu=0.1, std_sigma=0.1)

@@ -22,7 +22,10 @@ class SecondDerivatives():
         def fun(x):
             #print(self.functions_dict[tuple(couple)])
             #print(couple)
-            return self.functions_dict[tuple(couple)](i=i, j=j, p=p, mu=mu, sigma=sigma, x=x, proportional=proportional)
+            if couple[1]>couple[0]:
+                return self.functions_dict[tuple(couple)](i=j, j=i, p=p, mu=mu, sigma=sigma, x=x, proportional=proportional)
+            else:
+                return self.functions_dict[tuple(couple)](i=i, j=j, p=p, mu=mu, sigma=sigma, x=x, proportional=proportional)
 
         return fun
 
