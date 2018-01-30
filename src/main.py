@@ -26,9 +26,9 @@ x = np.concatenate([x1, x2])
 # Delayed Acceptance Algo
 
 # Initialization
-w = [0.5]
+w = [0.3]
 mu = [0.1, -0.1]
-sigma = [1.1, 0.9]
+sigma = [0.2, 2]
 N = 1000
 
 k = GaussianKernel(std_w=0.1, std_mu=0.1, std_sigma=0.1)
@@ -48,11 +48,11 @@ trace_sigma=list(trace_sigma)
 for i in range(N):
     u1 = np.random.uniform()
     u2 = np.random.uniform()
-    (w_prop, mu_prop, sigma_prop) = k.simulate(w, mu, sigma)
-    diff_l = m.likelihood(w_prop, mu_prop, sigma_prop) - \
-             m.likelihood(w, mu, sigma)
-    diff_k = k.evaluate(w, mu, sigma, w_prop, mu_prop, sigma_prop, log=True) - \
-             k.evaluate(w_prop, mu_prop, sigma_prop, w, mu, sigma, log=True)
+    (_, mu_prop, _) = k.simulate(w, mu, sigma)
+    diff_l = m.likelihood(w, mu_prop, sigma, log=True) - \
+             m.likelihood(w, mu, sigma, log=True)
+    diff_k = k.evaluate(w, mu, sigma, w, mu_prop, sigma, log=True) - \
+             k.evaluate(w, mu_prop, sigma, w, mu, sigma, log=True)
     acc = 0
     if np.log(u1) < diff_l + diff_k:
         # TODO : Generalize full w throughout the code
@@ -60,13 +60,13 @@ for i in range(N):
         # Here we need the full omegas
         #w_full = w + [1 - sum(w)]
         #w_prop_full = w_prop + [1 - sum(w_prop)]
-        p_prop=p.evaluate(w_prop, mu_prop, sigma_prop, proportional=False, density=m.density(w_prop, mu_prop, sigma_prop), log=True, unknown=[1,2]) 
-        p0=p.evaluate(w, mu, sigma, proportional=False, density=m.density(w, mu, sigma), log=True, unknown=[1,2])
+        p_prop=p.evaluate(w, mu_prop, sigma, proportional=False, density=m.density(w, mu_prop, sigma), log=True, unknown=[1]) 
+        p0=p.evaluate(w, mu, sigma, proportional=False, density=m.density(w, mu, sigma), log=True, unknown=[1])
         print(p_prop-p0)
         if np.log(u2) < p_prop-p0:
-            w = w_prop
+            #w = w_prop
             mu = mu_prop
-            sigma = sigma_prop
+            #sigma = sigma_prop
             acc = 1
     acc_list.append(acc)
 
