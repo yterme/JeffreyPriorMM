@@ -15,14 +15,14 @@ class JeffreyPrior():
     def functions_matrix(self, w, mu, sigma, proportional, known):
         """ Returns the matrix of second derivatives functions for computing the information matrix"""
 
-        matrix_size = []
+        matrix_size = 0
         vars_idx = []
         belongings_row = []
 
         parameters = [w, mu, sigma]
 
         for par_idx in known :
-            matrix_size.append(len(parameters[par_idx]))
+            matrix_size+= len(parameters[par_idx])
             vars_idx.append([i for i in range(len(parameters[par_idx]))])
             belongings_row.append([0 for _ in range(len(parameters[par_idx]))])
 
@@ -38,7 +38,7 @@ class JeffreyPrior():
     def information_matrix(self, w, mu, sigma, proportional, density, known):
         """ Information matrix with Riemann integral"""
         functions_matrix = self.functions_matrix(w, mu, sigma, proportional, known)
-        mat = - self.integral.integrate_matrix(functions_matrix, density=density)
+        mat =  self.integral.integrate_matrix(functions_matrix, density=density)
         print(mat)
         return(mat)
 

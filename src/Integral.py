@@ -20,7 +20,7 @@ class Integral():
         #values = [function(evaluation_points[i]) * density(evaluation_points[i]) for i in range(self.splits)]
         def fun_to_int(x):
             return(function(x)*density(x))
-        return(integrate.quad(fun_to_int(x), self.low_bound, self.up_bound))
+        return(integrate.quad(fun_to_int, self.low_bound, self.up_bound))
         
         #return sum(values) * self.riemann_interval
 
