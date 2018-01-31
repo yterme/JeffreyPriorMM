@@ -1,3 +1,5 @@
+from scipy import integrate
+
 class Integral():
     def __init__(self, riemann_parameters=None, mcmc_parameters=None):
 
@@ -13,12 +15,20 @@ class Integral():
             self.riemann_interval = (self.up_bound - self.low_bound) / self.splits
 
     def integrate(self, function, density):
-        evaluation_points = [self.low_bound + i * self.riemann_interval for i in range(self.splits)]
-        values = [function(evaluation_points[i]) * density(evaluation_points[i]) for i in range(self.splits)]
-        return sum(values) * self.riemann_interval
+        #evaluation_points = [self.low_bound + i * self.riemann_interval for i in range(self.splits)]
+        #import pdb; pdb.set_trace()
+        #values = [function(evaluation_points[i]) * density(evaluation_points[i]) for i in range(self.splits)]
+        def fun_to_int(x):
+            return(function(x)*density(x))
+        try:
+            x=(integrate.quad(fun_to_int, self.low_bound, self.up_bound)[0])
+        except Warning:
+            import pdb; pdb.set_trace()
+        return(x)
+        #return sum(values) * self.riemann_interval
 
     def integrate_matrix(self, functions_matrix, density):
-        matrix_size = len(functions_matrix)
+        #matrix_size = len(functions_matrix)
         return [[self.integrate(function= function, density=density)
                  for function in function_list]
                 for function_list in functions_matrix]

@@ -91,16 +91,18 @@ class Mixture():
     def __init__(self, x):
         self.x = x
 
-    def likelihood(self, w, mu, sigma):
+    def likelihood(self, w, mu, sigma, log=True):
 
+        w_all=w+[1-sum(w)]
         # sigma2=[s**2 for s in sigma ]
         # assumption gaussian mixture
-        ls = [sum([w[i] * norm.pdf(xj, loc=mu[i], scale=sigma[i]) \
-                   for i in range(len(w))]) for xj in self.x]
+        ls = [sum([w_all[i] * norm.pdf(xj, loc=mu[i], scale=sigma[i]) \
+                   for i in range(len(w_all))]) for xj in self.x]
         return np.sum([np.log(l) for l in ls])
 
     @staticmethod
-    def density(w_all, mu, sigma):
+    def density(w, mu, sigma):
+        w_all=w+[1-sum(w)]
         def density_fun(x):
             return sum([w_all[i] * norm.pdf(x, loc=mu[i], scale=sigma[i]) for i in range(len(w_all))])
         return density_fun

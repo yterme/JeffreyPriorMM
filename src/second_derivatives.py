@@ -18,8 +18,16 @@ class SecondDerivatives():
                                (2, 2): self.d2_sigmai_sigmaj}
 
     def functions_mappings(self, couple, w, mu, sigma, i, j, proportional):
+        p=w+[1-sum(w)]
         def fun(x):
-            return self.functions_dict[tuple(couple)](i=i, j=j, p=w, mu=mu, sigma=sigma, x=x, proportional=proportional)
+            #print(self.functions_dict[tuple(couple)])
+            #print(couple)
+            
+            
+            if couple[1]>couple[0]:
+                return self.functions_dict[tuple(couple)](i=j, j=i, p=p, mu=mu, sigma=sigma, x=x, proportional=proportional)
+            else:
+                return self.functions_dict[tuple(couple)](i=i, j=j, p=p, mu=mu, sigma=sigma, x=x, proportional=proportional)
 
         return fun
 
@@ -59,14 +67,18 @@ class SecondDerivatives():
     @staticmethod
     def d2_mui_muj(i, j, p, mu, sigma, x, proportional=None):
         if i == j:
-            diff = 1 - ratio([p[i] * dnorm(x, mu[i], sigma[i])], [np.dot(p, dnorm(x, mu, sigma))])
-            num = [p[i], dnorm(x, mu[i], sigma[i]), (1 - (x - mu[i]) ** 2 / sigma[i] ** 2), diff]
-            den = [sigma[i] ** 2, np.dot(p, dnorm(x, mu, sigma))]
+            #diff = 1 - ratio([p[i] * dnorm(x, mu[i], sigma[i])], [np.dot(p, dnorm(x, mu, sigma))])
+            num1 = [p[i], dnorm(x, mu[i], sigma[i]), ((x - mu[i]) / sigma[i] ** 2)**2 - 1/(sigma[i]**2)]
+            den = [np.dot(p, dnorm(x, mu, sigma))]
+            num2=[p[i],dnorm(x, mu[i], sigma[i]), (x-mu[i])/(sigma[i]**2)]
+            ratio1=ratio(num1,den)
+            ratio2=ratio(num2,den)**2
+            return(ratio1-ratio2)
         else:
             # TODO : Check this derivative
             num = [- p[i], p[j], x - mu[i], x - mu[j], dnorm(x, mu[i], sigma[i]), dnorm(x, mu[j], sigma[j])]
             den = [sigma[i] ** 2, sigma[j] ** 2, np.dot(p, dnorm(x, mu, sigma)) ** 2]
-        return ratio(num, den)
+            return ratio(num, den)
 
     @staticmethod
     def d2_mui_sigmaj(i, j, p, mu, sigma, x, proportional=None):
