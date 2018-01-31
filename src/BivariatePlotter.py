@@ -20,13 +20,13 @@ def bivariate_plotter (x_min, x_max, y_min, y_max, delta, f, title = "") :
     CS = plt.contour(X, Y, Z)
     plt.clabel(CS, inline=1, fontsize=10)
     plt.title(title)
-def f(x, y) : 
-    return(mlab.bivariate_normal(x, y, 1.0, 1.0, 3,3))
-bivariate_plotter(-5, 5, -5, 5, 0.1, f)
+#def f(x, y) : 
+#    return(mlab.bivariate_normal(x, y, 1.0, 1.0, 3,3))
+#bivariate_plotter(-5, 5, -5, 5, 0.1, f)
 
-def f(x, y) : 
-    return(x*y)
-bivariate_plotter(-5, 5, -5, 5, 0.1, f)
+#def f(x, y) : 
+#    return(x*y)
+#bivariate_plotter(-5, 5, -5, 5, 0.1, f)
 
 
 
@@ -56,9 +56,9 @@ def bivariate_plotter_kernel (x_min, x_max, y_min, y_max, delta, x, y, title = "
     Z = np.array(Z)
     print(Z)
     
-    f = plt.figure()
+    #f = plt.figure()
     CS = plt.contour(X, Y, Z)
     plt.clabel(CS, inline=1, fontsize=10)
     plt.title(title)    
-    f.savefig(name, bbox_inches='tight')
-bivariate_plotter_kernel(-5, 5, -5, 5, 0.1, np.random.normal(0, 1, 1000), np.random.normal(0, 1, 1000), name = "\\paradis\eleves\SCOUBE\Bureau\out.pdf")
+    #f.savefig(name, bbox_inches='tight')
+#bivariate_plotter_kernel(-5, 5, -5, 5, 0.1, np.random.normal(0, 1, 1000), np.random.normal(0, 1, 1000), name = "\\paradis\eleves\SCOUBE\Bureau\out.pdf")
